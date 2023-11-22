@@ -1,13 +1,14 @@
 """Cattrs validation."""
 from typing import Callable, List, Union
 
-from .errors import (
+from ..errors import (
     ClassValidationError,
     ForbiddenExtraKeysError,
     IterableValidationError,
 )
+from ._fluent import V, customize
 
-__all__ = ["format_exception", "transform_error"]
+__all__ = ["customize", "format_exception", "transform_error", "V"]
 
 
 def format_exception(exc: BaseException, type: Union[type, None]) -> str:
@@ -27,9 +28,9 @@ def format_exception(exc: BaseException, type: Union[type, None]) -> str:
     elif isinstance(exc, ValueError):
         if type is not None:
             tn = type.__name__ if hasattr(type, "__name__") else repr(type)
-            res = f"invalid value for type, expected {tn}"
+            res = f"invalid value for type, expected {tn} ({exc.args[0]})"
         else:
-            res = "invalid value"
+            res = f"invalid value ({exc.args[0]})"
     elif isinstance(exc, TypeError):
         if type is None:
             if exc.args[0].endswith("object is not iterable"):
@@ -85,7 +86,7 @@ def transform_error(
 
     .. versionadded:: 23.1.0
     """
-    errors = []
+    errors: List[str] = []
     if isinstance(exc, IterableValidationError):
         with_notes, without = exc.group_exceptions()
         for exc, note in with_notes:
@@ -102,6 +103,15 @@ def transform_error(
             p = f"{path}.{note.name}"
             if isinstance(exc, (ClassValidationError, IterableValidationError)):
                 errors.extend(transform_error(exc, p, format_exception))
+            elif isinstance(exc, ExceptionGroup):
+                # A bare ExceptionGroup is now used to group all validator failures.
+                errors.extend(
+                    [
+                        line
+                        for inner in exc.exceptions
+                        for line in transform_error(inner, p, format_exception)
+                    ]
+                )
             else:
                 errors.append(f"{format_exception(exc, note.type)} @ {p}")
         for exc in without:
