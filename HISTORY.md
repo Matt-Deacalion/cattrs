@@ -31,6 +31,8 @@ can now be used as decorators and have gained new features when used this way.
   ([#472](https://github.com/python-attrs/cattrs/pull/472))
 - The default union handler now also handles dataclasses.
   ([#426](https://github.com/python-attrs/cattrs/issues/426) [#477](https://github.com/python-attrs/cattrs/pull/477))
+- **Potentially breaking**: `IterableValidationError`s now require their subexceptions to have appropriate notes attached.
+  This was always the case internally in _cattrs_, but is now required of errors produced outside too.
 - Add support for [PEP 695](https://peps.python.org/pep-0695/) type aliases.
   ([#452](https://github.com/python-attrs/cattrs/pull/452))
 - Add support for named tuples with type metadata ([`typing.NamedTuple`](https://docs.python.org/3/library/typing.html#typing.NamedTuple)).
