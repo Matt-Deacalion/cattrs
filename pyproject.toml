@@ -116,6 +116,7 @@ source = [
 exclude_also = [
     "@overload",
     "class .*\\bProtocol(\\[.*\\])?\\):",
+    "assert_never\\("
 ]
 
 [tool.ruff]
