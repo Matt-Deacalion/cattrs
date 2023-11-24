@@ -8,7 +8,7 @@ from ..errors import (
     IterableValidationError,
 )
 from ._fluent import V, customize
-from ._validators import between, greater_than, len_between
+from ._validators import between, greater_than, is_unique, len_between
 
 __all__ = [
     "customize",
@@ -18,6 +18,7 @@ __all__ = [
     "between",
     "greater_than",
     "len_between",
+    "is_unique",
 ]
 
 
